@@ -1,16 +1,65 @@
-🏥 Sistema de Agendamento Médico (MedSched)Este é um sistema completo de agendamento de consultas que integra autenticação de usuários, busca de endereço via CEP e previsão do tempo para a data da consulta.🚀 DemonstraçãoLink do Repositório: https://github.com/seu-usuario/seu-repositorioDeploy Frontend: https://seu-app-frontend.vercel.appDeploy Backend: https://seu-app-api.railway.app🛠️ Tecnologias UtilizadasBackendNode.js & Express: Servidor e gerenciamento de rotas.SQLite: Banco de dados relacional para persistência de usuários e agendamentos.Crypto: Hash de senhas (PBKDF2) e geração de tokens de sessão.Integrações Externas:ViaCEP: Busca de endereços por CEP.Open-Meteo: Previsão do tempo automática para o dia do agendamento.FrontendVue.js 3: Framework progressivo para a interface do usuário.Axios: Cliente HTTP para consumo da API.Vue Router: Gerenciamento de rotas de navegação.📋 FuncionalidadesAutenticação Segura: Cadastro de usuários e login com tokens de sessão.Controle de Acesso (RBAC): Diferenciação entre perfis de patient (paciente) e secretary/admin.Agendamento Inteligente: - Verifica disponibilidade de horário e médico.Preenche o endereço automaticamente ao digitar o CEP.Emite alerta de chuva (weather_alert) baseado na localização e data da consulta.Dashboard: Visualização de consultas marcadas (pacientes veem as suas, secretários veem todas).⚙️ Como executar o projetoPré-requisitosNode.js instalado (v16 ou superior)Gerenciador de pacotes (npm ou yarn)1. Configurar o BackendBash# Entre na pasta do servidor
-cd backend
+# 🏥 MedSched - Sistema de Agendamento Médico
 
-# Instale as dependências
-npm install
+Sistema completo para gestão de consultas médicas, integrando autenticação, busca automática de endereços via CEP e previsão do tempo para a data do agendamento.
 
-# Certifique-se de que o arquivo db.js está configurado
-# Inicie o servidor
-O servidor rodará em http://localhost:3000. Configurar o Frontend (Vue.js)Bash# Entre na pasta do frontend
+## 🚀 Como Executar o Projeto
 
-# Instale as dependências
-npm install
+O projeto está configurado para rodar o **Backend** e o **Frontend** simultaneamente com um único comando a partir da pasta raiz.
 
-# Inicie o projeto
-npm run dev
-🔌 Endpoints da API (Resumo)MétodoRotaDescriçãoAcessoPOST/registerCadastro de novo usuárioPúblicoPOST/loginLogin e geração de tokenPúblicoGET/profileDados do usuário logadoAutenticadoGET/availabilityVerifica se horário está livreAutenticadoPOST/appointmentsCria um novo agendamentoAutenticadoGET/appointmentsLista agendamentosAutenticadoGET/weatherConsulta clima por data e CEPPúblico📝 LicençaEste projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+1.  **Instale as dependências** (na raiz do projeto):
+    ```bash
+    npm install
+    ```
+
+2.  **Inicie as aplicações:**
+    ```bash
+    npm run dev
+    ```
+
+* **Frontend:** [http://localhost:3001](http://localhost:3001)
+* **Backend:** [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+### **Backend (Node.js & Express)**
+* **Banco de Dados:** SQLite (com suporte a Promises).
+* **Segurança:** Hash de senhas usando `PBKDF2` e autenticação via Bearer Token.
+* **APIs Externas:** * [ViaCEP](https://viacep.com.br/) para localização.
+    * [Open-Meteo](https://open-meteo.com/) para previsão meteorológica.
+
+### **Frontend (Vue.js)**
+* **Framework:** Vue.js 3.
+* **Comunicação:** Axios para consumo da API REST.
+
+---
+
+## 📋 Funcionalidades Principais
+
+* **Fluxo de Autenticação:** Registro e Login com diferentes níveis de acesso (`patient`, `secretary`, `admin`).
+* **Agendamento Inteligente:** * Validação de disponibilidade de horário/médico.
+    * Autopreenchimento de endereço via CEP.
+    * **Alerta de Clima:** O sistema verifica se há previsão de chuva para o local e data da consulta, ajudando o paciente a se planejar.
+* **Painel Administrativo:** Secretários e administradores possuem visão geral de todos os agendamentos.
+
+---
+
+## 🔌 Principais Endpoints da API
+
+| Rota | Método | Descrição |
+| :--- | :--- | :--- |
+| `/register` | `POST` | Cria um novo usuário. |
+| `/login` | `POST` | Autentica e retorna o token de sessão. |
+| `/appointments` | `POST` | Realiza um novo agendamento (Requer Token). |
+| `/availability` | `GET` | Consulta se um horário está disponível. |
+| `/weather` | `GET` | Retorna o clima baseado no CEP e Data. |
+
+---
+
+## 🔗 Links e Deploy
+
+* **Repositório GitHub:** [Acesse aqui](https://github.com/seu-usuario/seu-repositorio)
+---
+
+> **Nota:** Certifique-se de que as portas 3000 e 3001 estão liberadas no seu ambiente local antes de iniciar.
