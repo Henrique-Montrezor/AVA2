@@ -1,0 +1,19 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Frontend Dev",
+			"type": "shell",
+			"command": "cd frontend/ava2 && npm run dev",
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "Run Frontend Dev",
+			"type": "shell",
+			"command": "cd frontend/ava2; npm run dev",
+			"isBackground": true,
+			"group": "build"
+		}
+	]
+}
