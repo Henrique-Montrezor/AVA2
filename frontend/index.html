@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Clínica - Frontend Simples</title>
+    <style>body{font-family:Arial,sans-serif;padding:14px;max-width:900px;margin:auto}input,button,select{margin:4px 0;padding:8px;width:100%}button{width:auto}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{border:1px solid #ccc;padding:6px;text-align:left}.msg{padding:6px;background:#e3f2fd;border:1px solid #90caf9;}</style>
+  </head>
+  <body>
+    <h1>Clínica - Frontend Vanilla</h1>
+    <div id="message" class="msg"></div>
+
+    <h2>Login</h2>
+    <input id="loginEmail" placeholder="Email" />
+    <input id="loginPassword" type="password" placeholder="Senha" />
+    <button id="loginBtn">Entrar</button>
+
+    <h2>Cadastro</h2>
+    <input id="regName" placeholder="Nome" />
+    <input id="regEmail" placeholder="Email" />
+    <input id="regPassword" type="password" placeholder="Senha" />
+    <button id="registerBtn">Cadastrar</button>
+
+    <h2>Agendar Consulta</h2>
+    <input id="formDoctor" placeholder="Médico" />
+    <input id="formDate" type="date" />
+    <input id="formTime" type="time" />
+    <input id="formCep" placeholder="CEP" />
+    <button id="checkAvailBtn">Verificar Disponibilidade</button>
+    <button id="bookBtn">Agendar</button>
+
+    <h2>Consultas</h2>
+    <button id="refreshBtn">Atualizar lista</button>
+    <table>
+      <thead><tr><th>ID</th><th>Médico</th><th>Data</th><th>Hora</th><th>Status</th><th>CEP</th><th>Cidade</th><th>Clima</th></tr></thead>
+      <tbody id="appointments"></tbody>
+    </table>
+
+    <script>
+      const api = 'http://localhost:3000';
+      let token = localStorage.getItem('authToken');
+      const msg = el('message');
+      function el(id){return document.getElementById(id)}
+      function show(text){msg.textContent=text}
+
+      async function request(path,{method='GET',body}= {}){
+        const headers={'Content-Type':'application/json'}
+        if(token) headers.Authorization='Bearer '+token;
+        const resp = await fetch(api+path,{method,headers,body: body&&JSON.stringify(body)});
+        const data=await resp.json();
+        if(!resp.ok) throw new Error(data.error||'Erro');
+        return data;
+      }
+
+      el('registerBtn').onclick=async()=>{
+        try{show('Cadastrando...'); await request('/register',{method:'POST',body:{name:el('regName').value,email:el('regEmail').value,password:el('regPassword').value}}); show('Cadastro OK. Faça login.')}catch(e){show(e.message)}
+      }
+
+      el('loginBtn').onclick=async()=>{
+        try{show('Entrando...'); const data=await request('/login',{method:'POST',body:{email:el('loginEmail').value,password:el('loginPassword').value}}); token=data.token; localStorage.setItem('authToken',token); show('Logado como '+data.user.name); await loadAppointments()}catch(e){show(e.message)}
+      }
+
+      el('checkAvailBtn').onclick=async()=>{
+        try{const d=el('formDate').value,t=el('formTime').value,g=el('formDoctor').value; const data=await request(`/availability?date=${d}&time=${t}&doctor=${encodeURIComponent(g)}`); show(data.available?'Disponível':'Ocupado')}catch(e){show(e.message)}
+      }
+
+      el('bookBtn').onclick=async()=>{
+        try{await request('/appointments',{method:'POST',body:{doctor:el('formDoctor').value,date:el('formDate').value,time:el('formTime').value,cep:el('formCep').value}}); show('Agendado'); loadAppointments()}catch(e){show(e.message)}
+      }
+
+      async function loadAppointments(){
+        try{const data=await request('/appointments'); const rows=data.appointments.map(a=>`<tr><td>${a.id}</td><td>${a.doctor}</td><td>${a.date}</td><td>${a.time}</td><td>${a.status}</td><td>${a.cep||''}</td><td>${a.city||''}</td><td>${a.weather_alert||''}</td></tr>`).join(''); el('appointments').innerHTML=rows; show('Consultas carregadas')}catch(e){show(e.message)}
+      }
+
+      el('refreshBtn').onclick=loadAppointments;
+      if(token) loadAppointments();
+    </script>
+  </body>
+</html>
